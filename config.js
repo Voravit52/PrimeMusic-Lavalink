@@ -1,6 +1,6 @@
 module.exports = {
   TOKEN: "",
-  language: "en",
+  language: "th",
   ownerID: ["1004206704994566164", ""], 
   mongodbUri : "",
   spotifyClientId : "",
