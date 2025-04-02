@@ -32,7 +32,7 @@ async function sendMessageWithPermissionsCheck(channel, embed, attachment, actio
         console.error("Error sending message:", error.message);
         const errorEmbed = new EmbedBuilder()
             .setColor('#FF0000')
-            .setDescription("⚠️ **ไม่สามารถส่งข้อความได้ ตรวจสอบสิทธิ์ของบอท**");
+            .setDescription("⚠️ **Unable to send message. Check bot permissions.**");
         await channel.send({ embeds: [errorEmbed] });
     }
 }
@@ -109,7 +109,7 @@ function initializePlayer(client) {
                 `- **Author:** ${track.info.author || 'Unknown Artist'}\n` +
                 `- **Length:** ${formatDuration(track.info.length)}\n` +
                 `- **Requester:** ${requester}\n` +
-                `- **Source:** ${track.info.sourceName}\n` + '**- Controls :**\n 🔁 `เล่นซ้ำ`, ❌ `ปิดเพลง`, ⏭️ `ข้าม`, 🎤 `เนื้อเพลง`, 🗑️ `ล้างคิว`\n ⏹️ `หยุด`, ⏸️ `หนุดขั่วคราว`, ▶️ `เล่นต่อ`, 🔊 `เพิ่มเสียง +`, 🔉 `ลดเสียง -`')
+                `- **Source:** ${track.info.sourceName}\n` + '**- Controls :**\n 🔁 `Loop`, ❌ `Disable`, ⏭️ `Skip`, 🎤 `Lyrics`, 🗑️ `Clear`\n ⏹️ `Stop`, ⏸️ `Pause`, ▶️ `Resume`, 🔊 `Vol +`, 🔉 `Vol -`')
             .setImage('attachment://musicard.png')
             .setColor('#FF7A00');
 
@@ -136,7 +136,7 @@ function initializePlayer(client) {
             console.error("Error creating or sending music card:", error.message);
             const errorEmbed = new EmbedBuilder()
                 .setColor('#FF0000')
-                .setDescription("⚠️ **ไม่สามารถโหลดการ์ดแทร็กได้ กำลังเล่นต่อ...*");
+                .setDescription("⚠️ **Unable to load track card. Continuing playback...**");
             await channel.send({ embeds: [errorEmbed] });
         }
     });
@@ -162,19 +162,19 @@ function initializePlayer(client) {
                 if (!nextTrack) {
                     await cleanupTrackMessages(client, player);
                     player.destroy();
-                    await channel.send("⚠️ **ไม่มีแทร็กที่จะเล่นอัตโนมัติอีกต่อไป กำลังตัดการเชื่อมต่อ...**");
+                    await channel.send("⚠️ **No more tracks to autoplay. Disconnecting...**");
                 }
             } else {
                 await cleanupTrackMessages(client, player);
                 console.log(`Autoplay is disabled for guild: ${guildId}`);
                 player.destroy();
-                await channel.send("🎶 **คิวสิ้นสุดแล้ว การเล่นอัตโนมัติถูกปิดใช้งาน**");
+                await channel.send("🎶 **Queue has ended. Autoplay is disabled.**");
             }
         } catch (error) {
             console.error("Error handling autoplay:", error);
             await cleanupTrackMessages(client, player);
             player.destroy();
-            await channel.send("👾**คิวว่าง! กำลังตัดการเชื่อมต่อ...**");
+            await channel.send("👾**Queue Empty! Disconnecting...**");
         }
     });
 }
@@ -253,7 +253,7 @@ function setupCollector(client, player, channel, message) {
         if (!voiceChannel || voiceChannel.id !== playerChannel) {
             const vcEmbed = new EmbedBuilder()
                 .setColor(config.embedColor)
-                .setDescription('🔒 **คุณต้องอยู่ในช่องเสียงเดียวกันเพื่อใช้การควบคุม!**');
+                .setDescription('🔒 **You need to be in the same voice channel to use the controls!**');
             const sentMessage = await channel.send({ embeds: [vcEmbed] });
             setTimeout(() => sentMessage.delete().catch(console.error), config.embedTimeout * 1000);
             return;
@@ -276,7 +276,7 @@ async function handleInteraction(i, player, channel) {
             break;
         case 'skipTrack':
             player.stop();
-            await sendEmbed(channel, "⏭️ **ผู้เล่นจะเล่นเพลงถัดไป**");
+            await sendEmbed(channel, "⏭️ **Player will play the next song!**");
             break;
         case 'disableLoop':
             disableLoop(player, channel);
@@ -286,27 +286,27 @@ async function handleInteraction(i, player, channel) {
             break;
         case 'clearQueue':
             player.queue.clear();
-            await sendEmbed(channel, "🗑️ **คิวได้รับการเคลียร์แล้ว!**");
+            await sendEmbed(channel, "🗑️ **Queue has been cleared!**");
             break;
         case 'stopTrack':
             player.stop();
             player.destroy();
-            await sendEmbed(channel, '⏹️ **การเล่นถูกหยุดและเครื่องเล่นถูกทำลาย!**');
+            await sendEmbed(channel, '⏹️ **Playback has been stopped and player destroyed!**');
             break;
         case 'pauseTrack':
             if (player.paused) {
-                await sendEmbed(channel, '⏸️ **การเล่นถูกหยุดชั่วคราวแล้ว!**');
+                await sendEmbed(channel, '⏸️ **Playback is already paused!**');
             } else {
                 player.pause(true);
-                await sendEmbed(channel, '⏸️ **การเล่นถูกหยุดชั่วคราว !**');
+                await sendEmbed(channel, '⏸️ **Playback has been paused!**');
             }
             break;
         case 'resumeTrack':
             if (!player.paused) {
-                await sendEmbed(channel, '▶️ **การเล่นได้ดำเนินการต่อแล้ว!**');
+                await sendEmbed(channel, '▶️ **Playback is already resumed!**');
             } else {
                 player.pause(false);
-                await sendEmbed(channel, '▶️ **การเล่นได้ดำเนินการต่อแล้ว!**');
+                await sendEmbed(channel, '▶️ **Playback has been resumed!**');
             }
             break;
         case 'volumeUp':
@@ -328,16 +328,21 @@ function adjustVolume(player, channel, amount) {
     const newVolume = Math.min(100, Math.max(10, player.volume + amount));
     if (newVolume === player.volume) {
         sendEmbed(channel, amount > 0 ? '🔊 **Volume is already at maximum!**' : '🔉 **Volume is already at minimum!**');
+    } else {
+        player.setVolume(newVolume);
+        sendEmbed(channel, `🔊 **Volume changed to ${newVolume}%!**`);
+    }
+}
 
 
 function toggleLoop(player, channel) {
     player.setLoop(player.loop === "track" ? "queue" : "track");
-    sendEmbed(channel, player.loop === "track" ? "🔁 **เปิดใช้งานลูปแทร็กแล้ว!**" : "🔁 **คิวลูปเปิดใช้งานแล้ว!**");
+    sendEmbed(channel, player.loop === "track" ? "🔁 **Track loop is activated!**" : "🔁 **Queue loop is activated!**");
 }
 
 function disableLoop(player, channel) {
     player.setLoop("none");
-    sendEmbed(channel, "❌ **ลูปถูกปิดใช้งาน!**");
+    sendEmbed(channel, "❌ **Loop is disabled!**");
 }
 
 
@@ -378,7 +383,7 @@ async function getLyrics(trackName, artistName, duration) {
 
         return response.data.syncedLyrics || response.data.plainLyrics;
     } catch (error) {
-        console.error("❌ เกิดข้อผิดพลาดในการดึงเนื้อเพลง:", error.response?.data?.message || error.message);
+        console.error("❌ Lyrics fetch error:", error.response?.data?.message || error.message);
         return null;
     }
 }
@@ -387,7 +392,7 @@ async function getLyrics(trackName, artistName, duration) {
 
 async function showLyrics(channel, player) {
     if (!player || !player.current || !player.current.info) {
-        sendEmbed(channel, "🚫 **ไม่มีเพลงที่กำลังเล่นอยู่**");
+        sendEmbed(channel, "🚫 **No song is currently playing.**");
         return;
     }
 
@@ -395,7 +400,7 @@ async function showLyrics(channel, player) {
     const lyrics = await getLyrics(track.title, track.author, Math.floor(track.length / 1000));
 
     if (!lyrics) {
-        sendEmbed(channel, "❌ **ไม่พบเนื้อเพลง!**");
+        sendEmbed(channel, "❌ **Lyrics not found!**");
         return;
     }
 
@@ -404,8 +409,8 @@ async function showLyrics(channel, player) {
     const songDuration = Math.floor(track.length / 1000); 
 
     const embed = new EmbedBuilder()
-        .setTitle(`🎵 เนื้อเพลงสด: ${track.title}`)
-        .setDescription("🔄 กำลังซิงค์เนื้อเพลง...")
+        .setTitle(`🎵 Live Lyrics: ${track.title}`)
+        .setDescription("🔄 Syncing lyrics...")
         .setColor(config.embedColor);
 
     const stopButton = new ButtonBuilder()
