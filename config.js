@@ -15,10 +15,10 @@ module.exports = {
   errorLog: "", 
   nodes: [
      {
-      name: "lava1.horizxon.studio",
-      password: "horizxon.studio",
-      host: "lava1.horizxon.studio",
-      port:  80,
+      name: "ChalresNaig Node",
+      password: "NAIGLAVA-dash.techbyte.host",
+      host: "lavahatry4.techbyte.host",
+      port:  3000,
       secure: false
     }
   ]
