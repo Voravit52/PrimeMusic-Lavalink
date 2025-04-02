@@ -1,5 +1,3 @@
-
-
 module.exports = {
   TOKEN: "",
   language: "en",
@@ -17,10 +15,10 @@ module.exports = {
   errorLog: "", 
   nodes: [
      {
-      name: "GlaceYT",
-      password: "glaceyt",
-      host: "193.226.78.187",
-      port:  9372,
+      name: "INZEWORLD.COM (DE)",
+      password: "saher.inzeworld.com",
+      host: "lava.inzeworld.com",
+      port:  3128,
       secure: false
     }
   ]
