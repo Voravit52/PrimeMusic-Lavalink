@@ -327,13 +327,7 @@ async function sendEmbed(channel, message) {
 function adjustVolume(player, channel, amount) {
     const newVolume = Math.min(100, Math.max(10, player.volume + amount));
     if (newVolume === player.volume) {
-        sendEmbed(channel, aVolume is already at maximum!**' : '🔉 **ปริมาณก็ถึงขั้นต่ำแล้ว!**');
-    } else {mount > 0 ? '🔊 **ระดับเสียงถึงขีดสุดแล้ว!**' : '🔉 **ระดับเสียงถึงขั้นต่ำแล้ว !**');
-    } else {
-        player.setVolume(newVolume);
-        sendEmbed(channel, `🔊 **ปรับระดับเสียงเป็น ${newVolume}%!**`);
-    }
-}
+        sendEmbed(channel, amount > 0 ? '🔊 **Volume is already at maximum!**' : '🔉 **Volume is already at minimum!**');
 
 
 function toggleLoop(player, channel) {
